@@ -1,8 +1,13 @@
+// Importation du framework Express
 const express = require('express');
+
+// Importation de l'instance unique de PlayerService
 const playerService = require('../services/player').getInstance();
 
+// Création d'un routeur Express
 const router = express.Router();
 
+// Route pour obtenir des joueurs distincts par nom avec un filtre
 router.get('/', async (req, res) => {
   const filter = req.query.filter;
   try {
@@ -14,32 +19,47 @@ router.get('/', async (req, res) => {
     }
     res.status(200).json(result);
   } catch (error) {
-    console.error('Error retrieving player stats:', error);
-    res.status(400).json({ error: 'Failed to retrieve stats: ' + error });
+    console.error(
+      'Erreur lors de la récupération des statistiques des joueurs :',
+      error
+    );
+    res
+      .status(400)
+      .json({ error: 'Échec de la récupération des statistiques : ' + error });
   }
 });
 
+// Route pour obtenir toutes les statistiques d'un joueur par son nom
 router.get('/byName', async (req, res) => {
   try {
     const result = await playerService.getPlayerAllStats(req.query.name);
     res.status(200).json(result);
   } catch (error) {
-    console.error('Error retrieving player stats:', error);
-    res.status(400).json({ error: 'Failed to retrieve stats: ' + error });
+    console.error(
+      'Erreur lors de la récupération des statistiques des joueurs :',
+      error
+    );
+    res
+      .status(400)
+      .json({ error: 'Échec de la récupération des statistiques : ' + error });
   }
 });
 
+// Route pour créer un nouveau joueur
 router.post('/', async (req, res) => {
   try {
     const playerStats = req.body;
     const newPlayer = await playerService.createPlayerStats(playerStats);
     res.status(201).json(newPlayer);
   } catch (error) {
-    console.error('Error creating player:', error);
-    res.status(400).json({ error: 'Failed to create player : ' + error });
+    console.error('Erreur lors de la création du joueur :', error);
+    res
+      .status(400)
+      .json({ error: 'Échec de la création du joueur : ' + error });
   }
 });
 
+// Route pour mettre à jour les statistiques d'un joueur
 router.put('/', async (req, res) => {
   try {
     const playerStats = req.body;
@@ -50,21 +70,33 @@ router.put('/', async (req, res) => {
     const newPlayer = await playerService.updatePlayerStats(playerStats);
     res.status(200).json(newPlayer);
   } catch (error) {
-    console.error('Error updating player stats:', error);
-    res.status(400).json({ error: 'Failed to update player stats: ' + error });
+    console.error(
+      'Erreur lors de la mise à jour des statistiques du joueur :',
+      error
+    );
+    res.status(400).json({
+      error: 'Échec de la mise à jour des statistiques du joueur : ' + error,
+    });
   }
 });
 
+// Route pour supprimer les statistiques d'un joueur par ID
 router.delete('/:id', async (req, res) => {
   try {
     await playerService.deletePlayerStatsById(req.params.id);
     res.status(200).json({ message: 'Suppression réussie' });
   } catch (error) {
-    console.error('Error deleting player stats:', error);
-    res.status(400).json({ error: 'Failed to delete player stats: ' + error });
+    console.error(
+      'Erreur lors de la suppression des statistiques du joueur :',
+      error
+    );
+    res.status(400).json({
+      error: 'Échec de la suppression des statistiques du joueur : ' + error,
+    });
   }
 });
 
+// Route pour obtenir les statistiques des joueurs par équipe et saison
 router.get('/stats', async (req, res) => {
   const team = req.query.team;
   const season = req.query.season;
@@ -75,7 +107,7 @@ router.get('/stats', async (req, res) => {
         .getAllTeams()
         .find((t) => t.name.toLowerCase() === team.toLowerCase());
       if (!nbaTeam) {
-        res.status(400).json({ error: 'Equipe NBA introuvable' });
+        res.status(400).json({ error: 'Équipe NBA introuvable' });
         return;
       }
       if (season && season.trim().length > 0) {
@@ -88,14 +120,20 @@ router.get('/stats', async (req, res) => {
         res.status(400).json({ error: 'La saison est requise' });
       }
     } else {
-      res.status(400).json({ error: "Le nom de l'équipe est requise" });
+      res.status(400).json({ error: "Le nom de l'équipe est requis" });
     }
   } catch (error) {
-    console.error('Error retrieving player stats:', error);
-    res.status(400).json({ error: 'Failed to retrieve stats: ' + error });
+    console.error(
+      'Erreur lors de la récupération des statistiques des joueurs :',
+      error
+    );
+    res
+      .status(400)
+      .json({ error: 'Échec de la récupération des statistiques : ' + error });
   }
 });
 
+// Route pour obtenir le classement des joueurs par unité (pts, ast, reb)
 router.get('/ranks/:unit', async (req, res) => {
   const team = req.query.team;
   const season = req.query.season;
@@ -118,7 +156,7 @@ router.get('/ranks/:unit', async (req, res) => {
         .getAllTeams()
         .find((t) => t.name.toLowerCase() === team.toLowerCase());
       if (!nbaTeam) {
-        res.status(400).json({ error: 'Equipe NBA introuvable' });
+        res.status(400).json({ error: 'Équipe NBA introuvable' });
         return;
       }
       if (season && season.trim().length > 0) {
@@ -144,9 +182,15 @@ router.get('/ranks/:unit', async (req, res) => {
     }
     res.status(200).json(result);
   } catch (error) {
-    console.error('Error retrieving player stats:', error);
-    res.status(400).json({ error: 'Failed to retrieve stats: ' + error });
+    console.error(
+      'Erreur lors de la récupération des statistiques des joueurs :',
+      error
+    );
+    res
+      .status(400)
+      .json({ error: 'Échec de la récupération des statistiques : ' + error });
   }
 });
 
+// Exportation du routeur Express pour utilisation dans d'autres parties de l'application
 module.exports = router;

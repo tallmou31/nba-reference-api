@@ -1,10 +1,13 @@
-const fs = require('fs');
-const csv = require('csv-parser');
-const Player = require('../models/player');
+// Importation des modules nécessaires
+const fs = require('fs'); // Module pour gérer le système de fichiers
+const csv = require('csv-parser'); // Module pour analyser les fichiers CSV
+const Player = require('../models/player'); // Importation du modèle de données Player
 
+// Définition de la classe InitiatorService pour l'initialisation de la base de données
 let instance = null;
 
 class InitiatorService {
+  // Méthode statique pour obtenir une instance unique de la classe InitiatorService
   static getInstance() {
     if (instance == null) {
       instance = new InitiatorService();
@@ -12,16 +15,24 @@ class InitiatorService {
     return instance;
   }
 
+  // Méthode d'initialisation de la base de données
   async init() {
-    console.log('Initializing data from NBA PLayer Stats API');
-    // Fetch data from the API
+    console.log(
+      "Initialisation des données à partir de l'API des statistiques des joueurs NBA"
+    );
+
+    // Réinitialisation de la collection des joueurs
     await this.reset();
 
-    // Create a stream to read the CSV file
-    const csvFilePath = `${__dirname}/../players_stats.csv`;
-    const stream = fs.createReadStream(csvFilePath).pipe(csv());
+    // Création d'un flux pour lire le fichier CSV
+    const csvFilePath = `${__dirname}/../players_stats.csv`; // Chemin vers le fichier CSV
+    const stream = fs.createReadStream(csvFilePath).pipe(csv()); // Création du flux
+
+    // Événement de lecture des données du flux
     stream.on('data', (data) => {
+      // Vérification si le nom du joueur existe et n'est pas vide
       if (data.player_name && data.player_name.trim().length > 0) {
+        // Création d'une instance de Player avec les données du CSV
         const player = new Player({
           player_name: data.player_name,
           team_abbreviation: data.team_abbreviation,
@@ -44,12 +55,14 @@ class InitiatorService {
               ? null
               : Number(data.draft_number),
         });
+
+        // Sauvegarde de l'instance Player dans la base de données MongoDB
         player
           .save()
           .then(() => {})
           .catch((error) =>
             console.error(
-              'Error saving player data: ' +
+              'Erreur lors de la sauvegarde des données du joueur : ' +
                 data.player_name +
                 ' ' +
                 data.season,
@@ -60,17 +73,22 @@ class InitiatorService {
     });
   }
 
+  // Méthode pour réinitialiser la collection des joueurs
   async reset() {
     try {
-      const result = await Player.deleteMany({});
+      const result = await Player.deleteMany({}); // Suppression de tous les documents dans la collection
 
       console.log(
-        `Collection reset: ${result.deletedCount} documents removed.`
+        `Collection réinitialisée : ${result.deletedCount} documents supprimés.`
       );
     } catch (error) {
-      console.error('Error resetting collection:', error);
+      console.error(
+        'Erreur lors de la réinitialisation de la collection :',
+        error
+      );
     }
   }
 }
 
+// Exportation de la classe InitiatorService pour une utilisation dans d'autres parties de l'application
 module.exports = InitiatorService;
