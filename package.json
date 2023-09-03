@@ -1,0 +1,22 @@
+{
+  "name": "nba-reference-api",
+  "version": "1.0.0",
+  "description": "API RESTful avec Node.js et MongoDB qui fournit les statistiques des joueurs en NBA",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mouhamed Lamine TALL",
+  "license": "ISC",
+  "dependencies": {
+    "@faker-js/faker": "^8.0.2",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "mongoose": "^7.4.4",
+    "mongoose-timestamp": "^0.6.0"
+  }
+}
