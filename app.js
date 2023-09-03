@@ -35,5 +35,5 @@ app.use('/api/seasons', seasonRoute);
 
 const listener = app.listen(process.env.PORT || 5000, () => {
   console.log('Express server listening on port %d', listener.address().port);
-  initiatorService.init();
+  //initiatorService.init();
 });
